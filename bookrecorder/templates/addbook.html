@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitap Ekle - Kitap Kayıt Sistemi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* AddBook sayfasına özel stil */
+        .addbook-wrapper {
+            max-width: 600px;
+            margin: 50px auto 50px auto;
+            padding: 40px 30px;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
+
+        .addbook-wrapper h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+
+        .input-box {
+            position: relative;
+            margin: 25px 0;
+        }
+
+        .input-box input, .input-box textarea {
+            width: 100%;
+            padding: 14px 12px;
+            border: none;
+            border-bottom: 2px solid #fff;
+            background: transparent;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-box input::placeholder,
+        .input-box textarea::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .input-box label {
+            position: absolute;
+            top: 60%;
+            left: 12px;
+            color: rgba(255,255,255,0);
+            transform: translateY(-50%);
+            pointer-events: none;
+            transition: 0.3s ease;
+            font-size: 15px;
+        }
+
+        .input-box input:focus ~ label,
+        .input-box input:valid ~ label,
+        .input-box textarea:focus ~ label,
+        .input-box textarea:valid ~ label {
+            top: -12px;
+            font-size: 13px;
+            color: #aa9028;
+            opacity: 1;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(90deg, #4b4302, #998a18, #e1d577);
+            background-size: 300% 300%;
+            color: #fff;
+            font-size: 17px;
+            cursor: pointer;
+            transition: 0.4s;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            animation: gradientMove 6s ease infinite;
+        }
+
+        .btn-submit:hover {
+            transform: scale(1.07);
+            box-shadow: 0 0 20px rgba(255,255,255,0.6);
+        }
+
+        .toggle-text {
+            margin-top: 15px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .toggle-text a {
+            color: #968335;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .toggle-text a:hover {
+            text-decoration: underline;
+        }
+        
+    </style>
+</head>
+<body>
+<div class="user-box">
+    <div class="level-box">
+        <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+            <script>
+                document.getElementById('progressBar').style.width = "{{ user_box.progress }}%";
+            </script>
+        </div>
+        <small>{{ user_box.xp % 100 }}/100 XP</small>
+
+        <!-- Unvan -->
+        {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+        {% set title_index = ((user_box.level - 1) // 5) %}
+        <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+    </div>
+</div>
+    <a href="/logout" class="logout-btn">Çıkış Yap</a>
+
+    <!-- Sayfa Başlığı -->
+    <h1 class="page-title">Kitap Kayıt Sistemi</h1>
+
+    <!-- Tab Menüsü -->
+    <div class="tabs">
+        <a href="/dashboard" class="tab-link">📊 Dashboard</a>
+        <a href="/add_book" class="tab-link active">➕ Kitap Ekle</a>
+        <a href="/my_books" class="tab-link">📚 Kitaplarım</a>
+        <a href="/library" class="tab-link">🌐 Kütüphane</a>
+        <a href="/social" class="tab-link">👥 Sosyal</a>
+        <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
+        <a href="/feed" class="tab-link">📰 Akış</a>
+    </div>
+
+    <!-- Kitap Ekle Formu -->
+    <div class="addbook-wrapper">
+        <h2>Yeni Kitap Ekle</h2>
+        <form method="POST" action="{{ url_for('add_book') }}">
+            <div class="input-box">
+                <input type="text" name="title" required placeholder="Kitap İsmi">
+                <label>Kitap Adı</label>
+            </div>
+            <div class="input-box">
+                <input type="text" name="author" required placeholder="Yazar İsmi">
+                <label>Yazar</label>
+            </div>
+            <div class="input-box">
+                <input type="number" name="page" min="1" placeholder="Sayfa Sayısı">
+                <label>Sayfa Sayısı</label>
+            </div>
+            <div class="input-box">
+                <input type="date" name="read_date" placeholder="Okuma Tarihi">
+            </div>
+            <div class="input-box">
+                <textarea name="notes" placeholder="Notlarınızı buraya yazın..."></textarea>
+                <label>Notlar</label>
+            </div>
+            <button type="submit" class="btn-submit">Kitabı Ekle</button>
+        </form>
+        <p class="toggle-text">
+            <a href="/dashboard">📊 Dashboard'a Dön</a>
+        </p>
+    </div>
+</body>
+</html>

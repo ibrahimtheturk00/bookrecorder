@@ -1,0 +1,19 @@
+<div class="user-box">
+    <p><strong>{{ username }}</strong></p>
+    <p>Level: {{ level }}</p>
+    <div class="level-box">
+        <p>{{ username }} - Seviye {{ level }}</p>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar_{{ user_id }}"></div>
+        </div>
+
+        <script>
+            document.getElementById('progressBar_{{ user_id }}').style.width = "{{ progress }}%";
+        </script>
+
+        {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+        {% set title_index = ((level-1) // 5) %}
+        <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+    </div>
+    <small>{{ xp % 100 }}/100 XP</small>
+</div>

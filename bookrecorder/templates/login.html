@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş / Kayıt</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1 class="page-title">Kitap Kayıt Sistemi</h1>
+    <div class="container">
+        <div class="form-box">
+
+            <!-- Flash mesajlar -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <h2 id="formTitle">Giriş Yap</h2>
+
+            <!-- Login Form -->
+            <form id="loginForm" method="POST" action="{{ url_for('login') }}">
+                <div class="input-box">
+                    <input type="text" name="username" required>
+                    <label>Kullanıcı Adı</label>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="password" required>
+                    <label>Şifre</label>
+                </div>
+                <button type="submit" class="btn">Giriş</button>
+                <p class="toggle-text">Hesabın yok mu? 
+                    <a href="#" id="signupLink">Kayıt Ol</a>
+                </p>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" method="POST" action="{{ url_for('signup') }}" style="display: none;">
+                <div class="input-box">
+                    <input type="text" name="username" required>
+                    <label>Kullanıcı Adı</label>
+                </div>
+                <div class="input-box">
+                    <input type="email" name="email" required>
+                    <label>Email</label>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="password" required>
+                    <label>Şifre</label>
+                </div>
+                <button type="submit" class="btn">Kayıt Ol</button>
+                <p class="toggle-text">Zaten hesabın var mı? 
+                    <a href="#" id="loginLink">Giriş Yap</a>
+                </p>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById("loginForm");
+        const signupForm = document.getElementById("signupForm");
+        const formTitle = document.getElementById("formTitle");
+        const signupLink = document.getElementById("signupLink");
+        const loginLink = document.getElementById("loginLink");
+
+        signupLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            loginForm.style.display = "none";
+            signupForm.style.display = "block";
+            formTitle.textContent = "Kayıt Ol";
+        });
+
+        loginLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            signupForm.style.display = "none";
+            loginForm.style.display = "block";
+            formTitle.textContent = "Giriş Yap";
+        });
+    </script>
+</body>
+</html>

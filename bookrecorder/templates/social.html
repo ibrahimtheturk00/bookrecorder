@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Library - Kitap Kayıt Sistemi</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+/* Social sayfasına özel stil */
+.social-wrapper {
+    max-width: 800px;
+    margin: 20px auto 50px auto; /* 140 yerine 50 yaptım */
+    padding: 30px;
+    color: #fff;
+}
+
+.social-wrapper h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 25px;
+}
+
+.search-box {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.search-box input[type="text"] {
+    width: 60%;
+    padding: 12px 15px;
+    border-radius: 30px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: rgba(0,0,0,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.search-box button {
+    padding: 12px 20px;
+    margin-left: 10px;
+    border-radius: 30px;
+    border: none;
+    background: linear-gradient(90deg, #4b4302, #998a18, #e1d577);
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.search-box button:hover {
+    transform: scale(1.05);
+}
+
+.user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.user-list a {
+    text-decoration: none; /* alt çizgiyi kaldırır */
+    color: inherit;         /* user-card içindeki rengi alır */
+}
+
+.user-card {
+    padding: 15px 20px;
+    border-radius: 15px;
+    background: rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: 0.3s;
+    color: #ffcc00; /* kullanıcı ismi sarı */
+}
+
+.user-card:hover {
+    background: rgba(0,0,0,0.2);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+}
+
+/* Tab menüsü */
+</style>
+</head>
+<body>
+    <div class="user-box">
+    <div class="level-box">
+        <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+            <script>
+                document.getElementById('progressBar').style.width = "{{ user_box.progress }}%";
+            </script>
+        </div>
+        <small>{{ user_box.xp % 100 }}/100 XP</small>
+
+        <!-- Unvan -->
+        {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+        {% set title_index = ((user_box.level - 1) // 5) %}
+        <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+    </div>
+</div>
+    <a href="/logout" class="logout-btn">Çıkış Yap</a>
+    <h1 class="page-title">Kitap Kayıt Sistemi</h1>
+    <!-- Tab Menüsü -->
+    <div class="tabs">
+        <a href="/dashboard" class="tab-link">📊 Dashboard</a>
+        <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
+        <a href="/my_books" class="tab-link">🕮 Kitaplarım</a>
+        <a href="/library" class="tab-link">🌐 Kütüphane</a>
+        <a href="/social" class="tab-link active">👥 Sosyal</a>
+        <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
+        <a href="/feed" class="tab-link">📰 Akış</a>
+    </div>
+
+    <div class="social-wrapper">
+        <h2>Kullanıcı Ara</h2>
+        <form method="GET" class="search-box" action="{{ url_for('social') }}">
+            <input type="text" name="q" placeholder="Kullanıcı adı girin..." value="{{ request.args.get('q', '') }}">
+            <button type="submit">Ara</button>
+        </form>
+
+        <div class="user-list">
+            {% if users %}
+                {% for user in users %}
+                    <a href="{{ url_for('user_profile', user_id=user.id) }}">
+    <div class="user-card">{{ user.username }}</div>
+</a>
+                {% endfor %}
+            {% else %}
+                <p style="text-align:center;">Kullanıcı bulunamadı.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

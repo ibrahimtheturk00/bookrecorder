@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ user.username }} - Profil</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+/* User Profile sayfasına özel stil */
+.profile-wrapper {
+    max-width: 1000px;
+    margin: 20px auto 50px auto;
+    padding: 30px;
+    color: #fff;
+    text-align: center;
+}
+
+.profile-stats {
+    background: rgba(0,0,0,0.25);
+    border-radius: 15px;
+    padding: 15px 25px;
+    margin-top: 20px;
+    display: block;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.2);
+    font-weight: bold;
+    color: #aa9028;
+}
+.profile-stats p {
+    margin: 8px 0;
+}
+
+.books-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.book-card {
+    background: rgba(0,0,0,0.1);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 20px;
+    width: 250px;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+}
+
+.book-card h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #aa9028;
+}
+
+.book-card p {
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.follow-btn {
+    background-color: #aa9028;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+    margin: 20px 0;
+}
+
+.follow-btn:hover {
+    background-color: #c2ad3c;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 40px;
+    margin: 20px 0;
+}
+</style>
+</head>
+<body>
+<h1 class="page-title">Kitap Kayıt Sistemi</h1>
+
+<div class="tabs">
+    <a href="/dashboard" class="tab-link">📊 Dashboard</a>
+    <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
+    <a href="/my_books" class="tab-link">📚 Kitaplarım</a>
+    <a href="/library" class="tab-link">🌐 Kütüphane</a>
+    <a href="/social" class="tab-link">👥 Sosyal</a>
+    <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
+    <a href="/feed" class="tab-link">📰 Akış</a>
+</div>
+
+<div class="profile-wrapper">
+    <h2 style="font-size: 40px;">{{ user.username }}'ın Profili</h2>
+        <!-- Profil istatistikleri -->
+        <div class="profile-stats">
+                    <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+        <script>
+            document.getElementById('progressBar').style.width = "{{ user_box.xp % 100 }}%";
+        </script>
+        <small>{{ user_box.xp % 100 }}/100 XP</small>
+
+        {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+        {% set title_index = ((user_box.level - 1) // 5) %}
+        <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+            <p>Toplam Kitap: {{ stats.total_books }}</p>
+            <p>Toplam Sayfa: {{ stats.total_pages }}</p>
+            <p>En Çok Okunan Yazar: {{ stats.most_author }}</p>
+        </div>
+
+    <!-- Takip / Takipten Çık Butonu -->
+    {% if current_user_id != user.id %}
+        <form action="{{ url_for('toggle_follow', user_id=user.id) }}" method="POST">
+            {% if is_following %}
+                <button type="submit" class="follow-btn">❌ Takipten Çık</button>
+            {% else %}
+                <button type="submit" class="follow-btn">➕ Takip Et</button>
+            {% endif %}
+        </form>
+    {% endif %}
+
+    <!-- ORTAK OKUNANLAR -->
+    {% if common_books %}
+        <h3 style="font-size: 30px; margin:20px 0; color:#aa9028;">📖 Ortak Okunanlar</h3>
+        <div class="books-container">
+            {% for title, author in common_books %}
+                <div class="book-card">
+                    <h3>{{ title }}</h3>
+                    <p><strong>Yazar:</strong> {{ author }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Kullanıcının kitapları -->
+    <h3 style="font-size: 30px; margin:30px 0; color:#aa9028;">📚 {{ user.username }}'ın Kitapları</h3>
+    <div class="books-container">
+        {% if books %}
+            {% for book in books %}
+                <div class="book-card">
+                    <h3>{{ book.title }}</h3>
+                    <p><strong>Yazar:</strong> {{ book.author }}</p>
+                    {% if book.read_date %}
+                        <p><strong>Okuma Tarihi:</strong> {{ book.read_date }}</p>
+                    {% endif %}
+                    {% if book.page %}
+                        <p><strong>Sayfa Sayısı:</strong> {{ book.page }}</p>
+                    {% endif %}
+                    {% if book.notes %}
+                        <p><strong>Notlar:</strong> {{ book.notes }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Henüz kitap eklenmemiş.</p>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

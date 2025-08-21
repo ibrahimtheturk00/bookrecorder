@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feed - Kitap Kayıt Sistemi</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+body {
+    background-color: #2B2A2A;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+}
+.page-title {
+    text-align: center;
+    font-size: 40px;
+    margin: 20px 0;
+    color: #aa9028;
+}
+.feed-wrapper {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+.feed-item {
+    background-color: rgba(0,0,0,0.4);
+    margin-bottom: 25px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+.feed-item:hover {
+    background-color: rgba(144, 121, 30, 0.3);
+}
+.book-title {
+    font-size: 22px;
+    font-weight: bold;
+}
+.book-meta {
+    font-size: 16px;
+    margin: 5px 0 10px 0;
+}
+.comment-section {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+}
+.comment {
+    margin-bottom: 10px;
+}
+.comment-form input[type="text"] {
+    width: 80%;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+}
+.comment-form input[type="submit"] {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: #aa9028;
+    color: #2B2A2A;
+    font-weight: bold;
+    cursor: pointer;
+}
+.comment-form input[type="submit"]:hover {
+    background-color: #fff;
+    color: #aa9028;
+}
+</style>
+</head>
+<body>
+<div class="user-box">
+    <div class="level-box">
+        <!-- Kullanıcı adı ve level -->
+        <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+
+        <!-- Progress bar -->
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+            <script>
+                document.getElementById('progressBar').style.width = "{{ user_box.xp % 100 }}%";
+            </script>
+        </div>
+
+        <!-- XP -->
+        <small>{{ user_box.xp % 100 }}/100 XP</small>
+
+        <!-- Unvan -->
+        {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+        {% set title_index = ((user_box.level - 1) // 5) %}
+        <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+    </div>
+</div>
+<a href="/logout" class="logout-btn">Çıkış Yap</a>
+<h1 class="page-title">Kitap Kayıt Sistemi</h1>
+
+<div class="tabs">
+    <a href="/dashboard" class="tab-link">📊 Dashboard</a>
+    <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
+    <a href="/my_books" class="tab-link">📚 Kitaplarım</a>
+    <a href="/library" class="tab-link">🌐 Kütüphane</a>
+    <a href="/social" class="tab-link">👥 Sosyal</a>
+    <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
+    <a href="/feed" class="tab-link active">📰 Akış</a>
+</div>
+
+<div class="feed-wrapper">
+    {% for item in feed_data %}
+    <div class="feed-item">
+        <div class="book-title" style="color: #aa9028;">{{ item.username }} yeni bir kitap ekledi: "{{ item.title }}"</div>
+        <div class="book-meta">
+            Yazar: {{ item.author }} | Sayfa: {{ item.page or "?" }} | Okuma Tarihi: {{ item.read_date or "Belirtilmemiş" }}
+        </div>
+        {% if item.comments %}
+        <div class="comment-section">
+            <h4 style="color: #aa9028;">Yorumlar:</h4>
+            {% for c in item.comments %}
+                <div class="comment"><strong>{{ c[1] }}:</strong> {{ c[0] }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="comment-form">
+            <form method="POST" action="{{ url_for('add_comment', book_id=item.book_id) }}">
+                <input type="text" name="comment" placeholder="Yorum ekle...">
+                <input type="submit" value="Gönder">
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <p>Takip ettiğiniz kullanıcılar henüz kitap eklememiş.</p>
+    {% endfor %}
+</div>
+
+</body>
+</html>
