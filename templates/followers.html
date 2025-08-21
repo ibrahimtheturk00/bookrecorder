@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ page_title }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+.followers-wrapper {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    color: #fff;
+}
+
+.followers-wrapper h2 {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 30px;
+    color: #aa9028;
+}
+
+.user-card {
+    background: rgba(0,0,0,0.1);
+    border-radius: 15px;
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+}
+
+.user-card:hover {
+    transform: translateY(-3px);
+}
+
+.user-card a {
+    color: #aa9028;
+    text-decoration: none;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div class="user-box">
+    <div class="level-box">
+        <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+            <script>
+                document.getElementById('progressBar').style.width = "{{ user_box.progress }}%";
+            </script>
+        </div>
+        <small>{{ user_box.xp % 100 }}/100 XP</small>
+
+        <!-- Unvan -->
+        {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+        {% set title_index = ((user_box.level - 1) // 5) %}
+        <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+    </div>
+</div>
+<h1 class="page-title">Kitap Kayıt Sistemi</h1>
+<div class="tabs">
+    <a href="/dashboard" class="tab-link">📊 Dashboard</a>
+    <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
+    <a href="/my_books" class="tab-link">📚 Kitaplarım</a>
+    <a href="/library" class="tab-link">🌐 Kütüphane</a>
+    <a href="/social" class="tab-link">👥 Sosyal</a>
+    <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
+    <a href="/feed" class="tab-link">📰 Akış</a>
+</div>
+
+<div class="followers-wrapper">
+    <h2>{{ page_title }}</h2>
+    {% if users %}
+        {% for u in users %}
+            <div class="user-card">
+                <span>{{ u[1] }}</span>
+                <a href="{{ url_for('user_profile', user_id=u[0]) }}">Profil</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align:center;">Henüz kullanıcı yok.</p>
+    {% endif %}
+</div>
+</body>
+</html>

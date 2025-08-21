@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liderlik Tablosu - Kitap Kayıt Sistemi</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+body {
+    background-color: #2B2A2A;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+}
+
+.leaderboard-wrapper {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+}
+
+.leaderboard-table th, .leaderboard-table td {
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 12px 15px;
+    text-align: center;
+}
+
+.leaderboard-table th {
+    background-color: #aa9028;
+    color: #2B2A2A;
+    font-size: 18px;
+}
+
+.leaderboard-table td {
+    background-color: rgba(0,0,0,0.3);
+}
+
+.leaderboard-table tr:nth-child(even) td {
+    background-color: rgba(0,0,0,0.4);
+}
+
+.leaderboard-table tr:hover td {
+    background-color: rgba(170, 144, 40, 0.5);
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+    <div class="user-box">
+    <div class="level-box">
+        <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+            <script>
+                document.getElementById('progressBar').style.width = "{{ user_box.progress }}%";
+            </script>
+        </div>
+        <small>{{ user_box.xp % 100 }}/100 XP</small>
+
+        <!-- Unvan -->
+        {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+        {% set title_index = ((user_box.level - 1) // 5) %}
+        <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+    </div>
+</div>
+    <a href="/logout" class="logout-btn">Çıkış Yap</a>
+<h1 class="page-title">Kitap Kayıt Sistemi</h1>
+
+<div class="tabs">
+    <a href="/dashboard" class="tab-link">📊 Dashboard</a>
+    <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
+    <a href="/my_books" class="tab-link">📚 Kitaplarım</a>
+    <a href="/library" class="tab-link">🌐 Kütüphane</a>
+    <a href="/social" class="tab-link">👥 Sosyal</a>
+    <a href="/leaderboard" class="tab-link active">🏆 Liderlik Tablosu</a>
+    <a href="/feed" class="tab-link">📰 Akış</a>
+</div>
+
+<div class="leaderboard-wrapper">
+
+    <h2 style="color: #a1861b; text-align: center; font-size: 35px; margin-bottom: 20px; margin-top: 20px;">En Çok Kitap Okuyanlar</h2>
+    <table class="leaderboard-table">
+        <tr>
+            <th>Sıra</th>
+            <th>Kullanıcı</th>
+            <th>Toplam Kitap</th>
+        </tr>
+        {% for row in top_books %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2 style="color: #a1861b; text-align: center; font-size: 35px; margin-bottom: 20px; margin-top: 20px;">En Fazla Sayfa Okuyanlar</h2>
+    <table class="leaderboard-table">
+        <tr>
+            <th>Sıra</th>
+            <th>Kullanıcı</th>
+            <th>Toplam Sayfa</th>
+        </tr>
+        {% for row in top_pages %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2 style="color: #a1861b; text-align: center; font-size: 35px; margin-bottom: 20px; margin-top: 20px;">Bu Ay En Çok Kitap Okuyanlar</h2>
+    <table class="leaderboard-table">
+        <tr>
+            <th>Sıra</th>
+            <th>Kullanıcı</th>
+            <th>Kitap Sayısı</th>
+        </tr>
+        {% for row in top_month %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+</body>
+</html>

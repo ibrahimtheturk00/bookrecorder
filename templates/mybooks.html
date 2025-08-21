@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitaplarım - Kitap Kayıt Sistemi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* MyBooks sayfasına özel stil */
+        .mybooks-wrapper {
+            max-width: 1200px;
+            margin: 20px auto 20px auto;
+            padding: 30px;
+            color: #fff;
+        }
+
+        .mybooks-wrapper h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        .books-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .book-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px;
+            width: 250px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+        }
+
+        .book-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #aa9028;
+        }
+
+        .book-card p {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #232323;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #434343;
+        }
+
+        /* ===== İstatistik Kartı ===== */
+        .stats-card-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stats-card {
+            background: rgba(255,255,255,0.1);
+            color:white;
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px 30px;
+            width: 250px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+        }
+
+        .stats-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #aa9028;
+        }
+
+        .stats-card p {
+            font-size: 16px;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-box">
+    <div class="level-box">
+        <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+            <script>
+                document.getElementById('progressBar').style.width = "{{ user_box.progress }}%";
+            </script>
+        </div>
+        <small>{{ user_box.xp % 100 }}/100 XP</small>
+
+        <!-- Unvan -->
+        {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+        {% set title_index = ((user_box.level - 1) // 5) %}
+        <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+    </div>
+</div>
+    <a href="/logout" class="logout-btn">Çıkış Yap</a>
+
+    <!-- Sayfa Başlığı -->
+    <h1 class="page-title">Kitap Kayıt Sistemi</h1>
+
+    <!-- Tab Menüsü -->
+    <div class="tabs">
+        <a href="/dashboard" class="tab-link">📊 Dashboard</a>
+        <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
+        <a href="/my_books" class="tab-link active">📚 Kitaplarım</a>
+        <a href="/library" class="tab-link">🌐 Kütüphane</a>
+        <a href="/social" class="tab-link">👥 Sosyal</a>
+        <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
+        <a href="/feed" class="tab-link">📰 Akış</a>
+    </div>
+
+    <!-- ===== İstatistik Kartları ===== -->
+     <br><br><br><br>
+    <div class="stats-card-wrapper">
+        <div class="stats-card">
+            <h3>Toplam Sayfa</h3>
+            <p>{{ total_pages }} sayfa</p>
+        </div>
+        <div class="stats-card">
+            <h3>En Çok Okunan Yazar</h3>
+            <p>{{ most_read_author }}</p>
+        </div>
+        <div class="stats-card">
+            <h3>Toplam Kitap</h3>
+            <p>{{ total_books }} kitap</p>
+        </div>
+    </div>
+
+    <!-- Kitaplar -->
+    <div class="mybooks-wrapper">
+        <h2 style="font-size: 50px;">Kitaplarım</h2>
+        <div class="books-container">
+            {% if books %}
+                {% for book in books %}
+                    <div class="book-card">
+                        <h3>{{ book.title }}</h3>
+                        <p><strong>Yazar:</strong> {{ book.author }}</p>
+                        {% if book.read_date %}<p><strong>Okuma Tarihi:</strong> {{ book.read_date }}</p>{% endif %}
+                        {% if book.page %}<p><strong>Sayfa Sayısı:</strong> {{ book.page }}</p>{% endif %}
+                        {% if book.notes %}
+    <p><strong>Notlar:</strong></p>
+    <ul>
+        {% if book.notes %}
+    <p><strong>Notlar:</strong> {{ book.notes }}</p>
+{% endif %}
+    </ul>
+{% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align:center;">Henüz kitap eklenmemiş.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

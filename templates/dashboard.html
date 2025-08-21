@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitap Kayıt Sistemi - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <a href="/logout" class="logout-btn">Çıkış Yap</a>
+    <!-- Kullanıcı Kutusu -->
+<div class="user-box">
+    <div class="level-box">
+        <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+            <script>
+                document.getElementById('progressBar').style.width = "{{ user_box.progress }}%";
+            </script>
+        </div>
+        <small>{{ user_box.xp % 100 }}/100 XP</small>
+
+        <!-- Unvan -->
+        {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+        {% set title_index = ((user_box.level - 1) // 5) %}
+        <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+    </div>
+</div>
+    <!-- Başlık -->
+    <h1 class="page-title">Kitap Kayıt Sistemi</h1>
+
+    <!-- 🔹 TAB MENÜ (Üste aldım) -->
+    <div class="tabs">
+        <a href="/dashboard" class="tab-link active">📊 Dashboard</a>
+        <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
+        <a href="/my_books" class="tab-link">📚 Kitaplarım</a>
+        <a href="/library" class="tab-link">🌐 Kütüphane</a>
+        <a href="/social" class="tab-link">👥 Sosyal</a>
+        <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
+        <a href="/feed" class="tab-link">📰 Akış</a>
+    </div>
+
+    <!-- Dashboard Kapsayıcı -->
+    <div class="dashboard-wrapper">
+
+        <!-- Kullanıcı Karşılama Kartı -->
+        <div class="welcome-card">
+    <div class="card-icon">👤</div>
+    <div class="card-info">
+        <h3 style="font-size: 30px;">Hoşgeldin, {{ username }}!</h3>
+        <p style="margin-top:10px; font-size:16px; color:#aa9028;">
+            <a href="{{ url_for('followers_list', type='followers') }}" style="color:#aa9028; font-size: 18px;">
+                Takipçiler: {{ followers_count }}
+            </a>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="{{ url_for('followers_list', type='following') }}" style="color:#aa9028; font-size:18px;">
+                Takip Edilenler: {{ following_count }}
+            </a>
+        </p>
+    </div>
+</div>
+
+        <!-- Dashboard Kartları -->
+        <div class="dashboard-container">
+            <div class="stat-card">
+                <div class="card-icon">📚</div>
+                <div class="card-info">
+                    <h3>Toplam Kitap</h3>
+                    <p id="totalBooks">{{ total_books }}</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="card-icon">📖</div>
+                <div class="card-info">
+                    <h3>Son Okunan Kitap</h3>
+                    <p id="lastReadBook">{{ last_read_book }}</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="card-icon">🎯</div>
+                <div class="card-info">
+                    <h3>Haftalık Hedef</h3>
+                    <p id="weeklyGoal">{{ weekly_goal }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-container" style="margin-top:10px;">
+    <!-- Yazarlar -->
+</div>
+</body>
+</html>
+    </div>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library - Kitap Kayıt Sistemi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Library sayfası stil */
+        .library-wrapper {
+            max-width: 1400px;
+            margin: 20px auto 50px auto;
+            padding: 30px;
+            color: #fff;
+        }
+
+        .library-wrapper h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        .all-books-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .library-card {
+            background: rgba(0,0,0,0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px;
+            width: 280px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .library-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+        }
+
+        .library-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #aa9028;
+        }
+
+        .library-card p {
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .library-card a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #232323;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+
+        .library-card a:hover {
+            background: #444;
+            color: #ffcc00;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #232323;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #434343;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-box">
+    <div class="level-box">
+        <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+            <script>
+                document.getElementById('progressBar').style.width = "{{ user_box.progress }}%";
+            </script>
+        </div>
+        <small>{{ user_box.xp % 100 }}/100 XP</small>
+
+        <!-- Unvan -->
+        {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+        {% set title_index = ((user_box.level - 1) // 5) %}
+        <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+    </div>
+</div>
+    <a href="/logout" class="logout-btn">Çıkış Yap</a>
+
+    <!-- Başlık -->
+    <h1 class="page-title">Kitap Kayıt Sistemi</h1>
+
+    <!-- Tab Menüsü -->
+    <div class="tabs">
+        <a href="/dashboard" class="tab-link">📊 Dashboard</a>
+        <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
+        <a href="/my_books" class="tab-link">📚 Kitaplarım</a>
+        <a href="/library" class="tab-link active">🌐 Kütüphane</a>
+        <a href="/social" class="tab-link">👥 Sosyal</a>
+        <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
+        <a href="/feed" class="tab-link">📰 Akış</a>
+    </div>
+
+    <!-- Tüm Kitaplar -->
+    <div class="library-wrapper">
+        <h2>Tüm Kullanıcıların Ekledikleri Kitaplar</h2>
+        <div class="all-books-container">
+            {% if books %}
+                {% for book in books %}
+                    <div class="library-card">
+                        <h3>{{ book.title }}</h3>
+                        <p><strong>Yazar:</strong> {{ book.author }}</p>
+                        {% if book.page %}
+                            <p><strong>Sayfa Sayısı:</strong> {{ book.page }}</p>
+                        {% endif %}
+                        {% if book.users %}
+                            <p><strong>Okuyanlar:</strong> {{ book.users|join(', ') }}</p>
+                        {% endif %}
+                        <a href="{{ url_for('bookdetails', title=book.title, author=book.author) }}">📖 Detayları Gör</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align:center;">Henüz kitap eklenmemiş.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

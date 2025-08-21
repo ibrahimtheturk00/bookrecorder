@@ -1,0 +1,315 @@
+/* Genel Stil */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    height: 100%;
+    display: block; /* flex kaldırıldı */
+    background: linear-gradient(-45deg,#191919, #313131, #616060);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+    padding-top: 160px; /* başlık ve tab için üst boşluk */
+}
+
+/* Arka plan animasyonu */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Sayfa başlığı */
+.page-title {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 50px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    background: linear-gradient(-45deg,#434343, #848484, #cbcbcb);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientBG 12s ease infinite, titleFade 1.5s ease-in-out;
+}
+
+@keyframes titleFade {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Logout butonu */
+.logout-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #232323;
+    color: white;
+    padding: 14px 24px;       /* hitboxu büyüttük */
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;          /* yazı boyutu da artırılabilir */
+    display: inline-block;     /* padding etkili olsun */
+    transition: 0.3s;
+    z-index: 9999;
+}
+
+.logout-btn:hover {
+    background: #434343;
+    transform: scale(1.05);   /* biraz hover efekti */
+}
+
+
+.tabs {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center;
+            gap: 20px !important;
+            margin: 0px auto !important;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px !important;
+            border-radius: 10px !important;
+        }
+.tab-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: background 0.3s;
+}
+.tab-link.active, .tab-link:hover {
+    background-color: #aa9028;
+    color: #2B2A2A;
+}
+
+/* Dashboard Wrapper */
+.dashboard-wrapper {
+    display: flex;
+    flex-direction: column; /* dikey sıralama */
+    align-items: center;
+    width: 100%;
+}
+
+/* Welcome Kartı */
+.welcome-card {
+    font-size: 40px;
+    width: 100%;
+    max-width: 900px !important;
+    margin: 20px auto 10px auto;
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 35px 25px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.welcome-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+    background: rgb(119, 119, 119);
+    background-size: 400% 400%;
+    animation: gradientBG 12s ease infinite;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    padding: 20px;
+    max-width: 1200px;
+}
+
+/* Stat Kartları */
+.stat-card {
+    flex: 1 1 calc(33% - 20px);
+    min-width: 280px;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 35px 25px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.stat-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+    background-size: 400% 400%;
+    animation: gradientBG 12s ease infinite;
+}
+
+.card-icon {
+    font-size: 50px;
+    margin-right: 25px;
+}
+
+.card-info h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.card-info p {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 900px) {
+    .stat-card { flex: 1 1 45%; }
+}
+
+@media (max-width: 600px) {
+    .dashboard-container { flex-direction: column; }
+    .stat-card { flex: 1 1 100%; }
+    .tabs { flex-direction: column; gap: 10px; }
+}
+
+/* Form Kutusu (gerekirse) */
+.container {
+    margin: 0 auto;      /* yatayda ortalar */
+    top: 50%;             /* dikey ortalamaya yardımcı */
+    position: relative;
+    width: 420px;
+    padding: 50px 45px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    color: #fff;
+    text-align: center;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.input-box {
+    position: relative;
+    margin: 30px 0;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 14px 12px;
+    border: none;
+    border-bottom: 2px solid #fff;
+    background: transparent !important;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.input-box label {
+    position: absolute;
+    top: 60%;
+    left: 12px;
+    color: rgba(255,255,255,0);
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: 0.3s ease;
+    font-size: 15px;
+}
+
+.input-box input:focus ~ label,
+.input-box input:valid ~ label {
+    top: -12px;
+    font-size: 13px;
+    color: #aa9028;
+    opacity: 1;
+}
+
+/* Buton */
+.btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(90deg, #4b4302, #998a18, #e1d577);
+    background-size: 300% 300%;
+    color: #fff;
+    font-size: 17px;
+    cursor: pointer;
+    transition: 0.4s;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    animation: gradientMove 6s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.btn:hover {
+    transform: scale(1.07);
+    box-shadow: 0 0 20px rgba(255,255,255,0.6);
+}
+
+/* Linkler */
+.toggle-text {
+    margin-top: 18px;
+    font-size: 14px;
+}
+
+.toggle-text a {
+    color: #968335;
+    text-decoration: none;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+.toggle-text a:hover {
+    text-decoration: underline;
+}
+.tab-link.active {
+    color: #ffcc00; /* aktif link rengi */
+}
+.user-box {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background: #222;
+    color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    width: 200px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 999;
+    font-size: 14px;
+}
+
+.progress-bar {
+    background: #444;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 10px;
+    margin: 5px 0;
+}
+
+.progress {
+    background: linear-gradient(90deg, #4caf50, #8bc34a);
+    height: 10px;
+}
