@@ -71,8 +71,19 @@
     <a href="/social" class="tab-link">👥 Sosyal</a>
     <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
     <a href="/feed" class="tab-link">📰 Akış</a>
+    <a href="/achievements" class="tab-link">🎖️ Başarımlar</a>
 </div>
-
+            {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 <div class="followers-wrapper">
     <h2>{{ page_title }}</h2>
     {% if users %}

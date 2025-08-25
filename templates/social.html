@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Library - Kitap Kayıt Sistemi</title>
+<title>Library - Sosyal</title>
 
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <style>
 /* Social sayfasına özel stil */
 .social-wrapper {
     max-width: 800px;
-    margin: 20px auto 50px auto; /* 140 yerine 50 yaptım */
+    margin: 20px auto 50px auto;
     padding: 30px;
     color: #fff;
 }
@@ -58,10 +58,12 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+    margin-bottom: 40px;
 }
+
 .user-list a {
-    text-decoration: none; /* alt çizgiyi kaldırır */
-    color: inherit;         /* user-card içindeki rengi alır */
+    text-decoration: none;
+    color: inherit;
 }
 
 .user-card {
@@ -71,7 +73,7 @@
     border: 1px solid rgba(255,255,255,0.2);
     cursor: pointer;
     transition: 0.3s;
-    color: #ffcc00; /* kullanıcı ismi sarı */
+    color: #ffcc00;
 }
 
 .user-card:hover {
@@ -79,11 +81,119 @@
     box-shadow: 0 5px 20px rgba(0,0,0,0.4);
 }
 
-/* Tab menüsü */
+/* Chat stili */
+.chat-wrapper {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 15px;
+    background: rgba(0,0,0,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.chat-wrapper h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.chat-box {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.message-bubble {
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    position: relative;
+    word-wrap: break-word;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+.message-bubble .sender {
+    color: #bcad3a;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.message-bubble .time {
+    font-size: 10px;
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    margin-top: 5px;
+}
+
+.message-bubble.sent {
+    align-self: flex-end;
+    background: #5f6063;
+    border-bottom-right-radius: 0;
+}
+
+.message-bubble.received {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.2);
+    border-bottom-left-radius: 0;
+}
+
+.chat-wrapper form {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.chat-wrapper input[type="text"],
+.chat-wrapper select {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: rgba(0,0,0,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.chat-wrapper button {
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(90deg, #4b4302, #998a18, #e1d577);
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.chat-wrapper button:hover {
+    transform: scale(1.05);
+}
+
+/* Scroll bar */
+.chat-box::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 5px;
+}
 </style>
 </head>
 <body>
-    <div class="user-box">
+<script>
+    // Mevcut kullanıcı adını JS'de tut
+    const CURRENT_USER = "{{ user_box.username }}";
+    const CURRENT_USER_ID = {{ current_user_id }};
+</script>
+
+<div class="user-box">
     <div class="level-box">
         <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
         <div class="progress-bar">
@@ -94,43 +204,183 @@
         </div>
         <small>{{ user_box.xp % 100 }}/100 XP</small>
 
-        <!-- Unvan -->
         {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
         {% set title_index = ((user_box.level - 1) // 5) %}
         <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
     </div>
 </div>
-    <a href="/logout" class="logout-btn">Çıkış Yap</a>
-    <h1 class="page-title">Kitap Kayıt Sistemi</h1>
-    <!-- Tab Menüsü -->
-    <div class="tabs">
-        <a href="/dashboard" class="tab-link">📊 Dashboard</a>
-        <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
-        <a href="/my_books" class="tab-link">🕮 Kitaplarım</a>
-        <a href="/library" class="tab-link">🌐 Kütüphane</a>
-        <a href="/social" class="tab-link active">👥 Sosyal</a>
-        <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
-        <a href="/feed" class="tab-link">📰 Akış</a>
+
+<a href="/logout" class="logout-btn">Çıkış Yap</a>
+<h1 class="page-title">Kitap Kayıt Sistemi</h1>
+
+<!-- Tab Menüsü -->
+<div class="tabs">
+    <a href="/dashboard" class="tab-link">📊 Dashboard</a>
+    <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
+    <a href="/my_books" class="tab-link">📚 Kitaplarım</a>
+    <a href="/library" class="tab-link">🌐 Kütüphane</a>
+    <a href="/social" class="tab-link active">👥 Sosyal</a>
+    <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
+    <a href="/feed" class="tab-link">📰 Akış</a>
+    <a href="/achievements" class="tab-link">🎖️ Başarımlar</a>
+</div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
     </div>
+  {% endif %}
+{% endwith %}
+<div class="social-wrapper">
+    <!-- Kullanıcı Ara -->
+    <h2>Kullanıcı Ara</h2>
+    <form method="GET" class="search-box" action="{{ url_for('social') }}">
+        <input type="text" name="q" placeholder="Kullanıcı adı girin..." value="{{ request.args.get('q', '') }}">
+        <button type="submit">Ara</button>
+    </form>
 
-    <div class="social-wrapper">
-        <h2>Kullanıcı Ara</h2>
-        <form method="GET" class="search-box" action="{{ url_for('social') }}">
-            <input type="text" name="q" placeholder="Kullanıcı adı girin..." value="{{ request.args.get('q', '') }}">
-            <button type="submit">Ara</button>
-        </form>
-
-        <div class="user-list">
-            {% if users %}
-                {% for user in users %}
-                    <a href="{{ url_for('user_profile', user_id=user.id) }}">
+    <!-- Kullanıcı Listesi -->
+    <div class="user-list">
+        {% if users %}
+            {% for user in users %}
+                <a href="{{ url_for('user_profile', user_id=user.id) }}">
     <div class="user-card">{{ user.username }}</div>
 </a>
-                {% endfor %}
-            {% else %}
-                <p style="text-align:center;">Kullanıcı bulunamadı.</p>
-            {% endif %}
-        </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align:center;">Kullanıcı bulunamadı.</p>
+        {% endif %}
     </div>
+
+    <!-- Genel Sohbet -->
+    <div class="chat-wrapper">
+        <h2>Genel Sohbet</h2>
+        <div class="chat-box" id="general-chat-box">
+            {% for msg, username, created_at in general_messages %}
+                <div class="message-bubble {% if username == user_box.username %}sent{% else %}received{% endif %}">
+                    {% if username != user_box.username %}
+                        <div class="sender">{{ username }}</div>
+                    {% endif %}
+                    <div class="content">{{ msg }}</div>
+                    <div class="time">{{ created_at.split(' ')[1][:5] }}</div>
+                </div>
+            {% endfor %}
+        </div>
+        <form id="general-chat-form" method="POST" action="{{ url_for('send_general_message') }}">
+            <input type="text" name="message" placeholder="Mesaj yaz..." required>
+            <button type="submit">Gönder</button>
+        </form>
+    </div>
+
+    <!-- Kişisel Mesajlar -->
+    <div class="chat-wrapper">
+        <h2>Kişisel Mesajlar</h2>
+        <div class="chat-box" id="private-chat-box">
+            {% for msg, username, created_at, sender_id, receiver_id in private_messages %}
+                <div class="message-bubble {% if sender_id == current_user_id %}sent{% else %}received{% endif %}">
+                    {% if sender_id != current_user_id %}
+                        <div class="sender">{{ username }}</div>
+                    {% endif %}
+                    <div class="content">{{ msg }}</div>
+                    <div class="time">{{ created_at.split(' ')[1][:5] }}</div>
+                </div>
+            {% endfor %}
+        </div>
+        <form id="private-chat-form" method="POST" action="{{ url_for('send_private_message') }}">
+            <select name="receiver_id" required>
+                {% for user in users %}
+                    {% if user.id != current_user_id %}
+                        <option value="{{ user.id }}" {% if chat_with_id == user.id %}selected{% endif %}>{{ user.username }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <input type="text" name="message" placeholder="Mesaj yaz..." required>
+            <button type="submit">Gönder</button>
+        </form>
+    </div>
+</div>
+
+<script>
+// --- Genel Sohbet ---
+const generalForm = document.getElementById('general-chat-form');
+const generalChatBox = document.getElementById('general-chat-box');
+
+generalForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(generalForm);
+    const response = await fetch(generalForm.action, { method: 'POST', body: formData });
+    if (response.ok) {
+        generalForm.querySelector('input[name="message"]').value = '';
+        await loadGeneralMessages(true);
+    }
+});
+
+async function loadGeneralMessages(scrollToBottom = false) {
+    const response = await fetch('/get_general_messages');
+    if (response.ok) {
+        const msgs = await response.json();
+        generalChatBox.innerHTML = '';
+        msgs.forEach(m => {
+            const div = document.createElement('div');
+            div.className = 'message-bubble ' + (m.username === CURRENT_USER ? 'sent' : 'received');
+            div.innerHTML = (m.username !== CURRENT_USER ? `<div class="sender">${m.username}</div>` : '') +
+                            `<div class="content">${m.msg}</div>
+                             <div class="time">${m.time}</div>`;
+            generalChatBox.appendChild(div);
+        });
+        if (scrollToBottom) {
+            generalChatBox.scrollTop = generalChatBox.scrollHeight;
+        }
+    }
+}
+
+// İlk yükleme ve 5 saniyede bir güncelle
+window.addEventListener('load', () => loadGeneralMessages(true));
+setInterval(() => loadGeneralMessages(true), 5000);
+
+// --- Kişisel Sohbet ---
+const privateForm = document.getElementById('private-chat-form');
+const privateChatBox = document.getElementById('private-chat-box');
+
+privateForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(privateForm);
+    const response = await fetch(privateForm.action, { method: 'POST', body: formData });
+    if (response.ok) {
+        privateForm.querySelector('input[name="message"]').value = '';
+        await loadPrivateMessages(true);
+    }
+});
+
+async function loadPrivateMessages(scrollToBottom = false) {
+    const chatWithId = privateForm.querySelector('select[name="receiver_id"]').value;
+    if (!chatWithId) return;
+    const response = await fetch(`/get_private_messages/${chatWithId}`);
+    if (response.ok) {
+        const msgs = await response.json();
+        privateChatBox.innerHTML = '';
+        msgs.forEach(m => {
+            const div = document.createElement('div');
+            div.className = 'message-bubble ' + (m.sender_id === CURRENT_USER_ID ? 'sent' : 'received');
+            div.innerHTML = (m.sender_id !== CURRENT_USER_ID ? `<div class="sender">${m.username}</div>` : '') +
+                            `<div class="content">${m.msg}</div>
+                             <div class="time">${m.time}</div>`;
+            privateChatBox.appendChild(div);
+        });
+        if (scrollToBottom) {
+            privateChatBox.scrollTop = privateChatBox.scrollHeight;
+        }
+    }
+}
+
+// İlk yükleme ve 5 saniyede bir güncelle
+window.addEventListener('load', () => loadPrivateMessages(true));
+setInterval(() => loadPrivateMessages(true), 5000);
+</script>
+
 </body>
 </html>

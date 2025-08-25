@@ -6,169 +6,293 @@
 <title>{{ user.username }} - Profil</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <style>
-/* User Profile sayfasına özel stil */
-.profile-wrapper {
-    max-width: 1000px;
-    margin: 20px auto 50px auto;
-    padding: 30px;
-    color: #fff;
-    text-align: center;
-}
+/* Genel stil */
+.profile-wrapper { max-width: 700px; margin: 20px auto 50px auto; padding: 20px; color: #fff; text-align: center; }
+.profile-stats { max-width: 700px; margin: 20px auto 50px auto; padding: 15px 25px; color: #aa9028; text-align: center; background: rgba(0,0,0,0.25); border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); font-weight: bold; }
+.profile-stats p { margin: 8px 0; }
+.book-card img { display: block; margin: 0 auto 15px; width: 100px; height: 100px; border-radius: 10px; }
 
-.profile-stats {
-    background: rgba(0,0,0,0.25);
-    border-radius: 15px;
-    padding: 15px 25px;
-    margin-top: 20px;
-    display: block;
-    text-align: center;
-    border: 1px solid rgba(255,255,255,0.2);
-    font-weight: bold;
-    color: #aa9028;
-}
-.profile-stats p {
-    margin: 8px 0;
-}
+/* Tablar */
+.profile-tabs { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+.profile-tab-link { padding: 10px 20px; border-radius: 10px; background: rgba(170, 144, 40, 0.3); color: #fff; cursor: pointer; font-weight: bold; transition: background 0.3s; text-decoration: none; }
+.profile-tab-link.active { background: #aa9028; color: #3a3939; }
+.profile-tab-content { display: none; }
+.profile-tab-content.active { display: block; }
 
-.books-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-}
+/* Kartlar */
+.books-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; color:#fff; }
+.book-card { text-align: center; background: rgba(0,0,0,0.1); backdrop-filter: blur(15px); border-radius: 20px; padding: 20px; width: 250px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 6px 25px rgba(0,0,0,0.3); transition: transform 0.3s, box-shadow 0.3s; }
+.book-card:hover { transform: translateY(-5px); box-shadow: 0 10px 35px rgba(0,0,0,0.5); }
+.book-card h3, .book-card h4 { font-size: 20px; margin-bottom: 10px; color: #aa9028; }
+.book-card p { font-size: 14px; margin: 5px 0; }
 
-.book-card {
-    background: rgba(0,0,0,0.1);
-    backdrop-filter: blur(15px);
-    border-radius: 20px;
-    padding: 20px;
-    width: 250px;
-    border: 1px solid rgba(255,255,255,0.2);
-    box-shadow: 0 6px 25px rgba(0,0,0,0.3);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
+.follow-btn { margin: 20px auto; display: inline-block; background-color: #aa9028; color: white; padding: 10px 20px; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; transition: background 0.3s; }
+form { text-align: center; }
+.follow-btn:hover { background-color: #c2ad3c; }
+.page-title { text-align: center; font-size: 40px; margin: 20px 0; }
 
-.book-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 35px rgba(0,0,0,0.5);
-}
+/* Social Chat */
+.social-wrapper { max-width: 800px; margin: 40px auto; padding: 20px; color: #fff; }
+.chat-wrapper { margin-top: 20px; padding: 15px; border-radius: 15px; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2); }
+.chat-box { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+.message-bubble { max-width: 70%; padding: 8px 12px; border-radius: 15px; position: relative; word-wrap: break-word; background: rgba(255,255,255,0.1); color: #fff; }
+.message-bubble .sender { font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+.message-bubble .time { font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; text-align: center; }
+.message-bubble.sent { align-self: flex-end; background: #4b7bec; border-bottom-right-radius: 0; }
+.message-bubble.received { align-self: flex-start; background: rgba(255,255,255,0.2); border-bottom-left-radius: 0; }
+.chat-wrapper input[type="text"], .chat-wrapper select { flex:1; padding: 8px 10px; border-radius: 20px; border:none; outline:none; background: rgba(0,0,0,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); }
+.chat-wrapper button { padding: 8px 15px; border-radius:20px; border:none; background:#aa9028; color:#fff; cursor:pointer; }
 
-.book-card h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
-    color: #aa9028;
-}
+/* Scroll bar */
+.chat-box::-webkit-scrollbar { width: 6px; }
+.chat-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius:3px; }
 
-.book-card p {
-    font-size: 14px;
-    margin: 5px 0;
-}
-
-.follow-btn {
-    background-color: #aa9028;
-    color: white;
-    padding: 10px 20px;
-    border: none;
+/* Yorum kartları - yeni stil */
+.comment-card {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.15);
     border-radius: 12px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s;
-    margin: 20px 0;
+    padding: 12px 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
-
-.follow-btn:hover {
-    background-color: #c2ad3c;
+.comment-card .comment-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #aa9028;
+    font-weight: bold;
 }
-
-.page-title {
-    text-align: center;
-    font-size: 40px;
-    margin: 20px 0;
+.comment-card .comment-content {
+    font-size: 14px;
+    color: #fff;
 }
 </style>
 </head>
 <body>
+<a href="/logout" class="logout-btn">Çıkış Yap</a>
 <h1 class="page-title">Kitap Kayıt Sistemi</h1>
-
 <div class="tabs">
     <a href="/dashboard" class="tab-link">📊 Dashboard</a>
     <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
     <a href="/my_books" class="tab-link">📚 Kitaplarım</a>
     <a href="/library" class="tab-link">🌐 Kütüphane</a>
-    <a href="/social" class="tab-link">👥 Sosyal</a>
+    <a href="/social" class="tab-link active">👥 Sosyal</a>
     <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
     <a href="/feed" class="tab-link">📰 Akış</a>
+    <a href="/achievements" class="tab-link">🎖️ Başarımlar</a>
+</div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+<button onclick="window.location.href='/social'" style="display:block; margin: 10px auto; padding: 10px 20px; border-radius:12px; border:none; background:#aa9028; color:#fff; font-weight:bold; cursor:pointer; transition: background 0.3s;">
+    ← Geri Dön
+</button>
+
+<div class="profile-stats">
+    <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+    <div class="progress-bar">
+        <div class="progress" id="za"></div>
+        <script>document.getElementById('za').style.width = "{{ user_box.progress }}%";</script>
+    </div>
+    <small>{{ user_box.xp % 100 }}/100 XP</small>
+    {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+    {% set title_index = ((user_box.level - 1) // 5) %}
+    <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
 </div>
 
-<div class="profile-wrapper">
-    <h2 style="font-size: 40px;">{{ user.username }}'ın Profili</h2>
-        <!-- Profil istatistikleri -->
-        <div class="profile-stats">
-                    <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+<!-- Profil içi tablar -->
+<div class="profile-tabs">
+    <a class="profile-tab-link active" onclick="openProfileTab('books')">📚 Eklediği Kitaplar</a>
+    <a class="profile-tab-link" onclick="openProfileTab('common')">📖 Ortak Okuduklarınız</a>
+    <a class="profile-tab-link" onclick="openProfileTab('achievements')">🏅 Kazandığı Başarımlar</a>
+    <a class="profile-tab-link" onclick="openProfileTab('chat')">💬 Mesajlaşma</a>
+    <a class="profile-tab-link" onclick="openProfileTab('comments')">📝 Yorumlar</a>
+</div>
 
-        <div class="progress-bar">
-            <div class="progress" id="progressBar"></div>
-        </div>
-        <script>
-            document.getElementById('progressBar').style.width = "{{ user_box.xp % 100 }}%";
-        </script>
-        <small>{{ user_box.xp % 100 }}/100 XP</small>
-
-        {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
-        {% set title_index = ((user_box.level - 1) // 5) %}
-        <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
-            <p>Toplam Kitap: {{ stats.total_books }}</p>
-            <p>Toplam Sayfa: {{ stats.total_pages }}</p>
-            <p>En Çok Okunan Yazar: {{ stats.most_author }}</p>
-        </div>
-
-    <!-- Takip / Takipten Çık Butonu -->
-    {% if current_user_id != user.id %}
-        <form action="{{ url_for('toggle_follow', user_id=user.id) }}" method="POST">
-            {% if is_following %}
-                <button type="submit" class="follow-btn">❌ Takipten Çık</button>
-            {% else %}
-                <button type="submit" class="follow-btn">➕ Takip Et</button>
-            {% endif %}
-        </form>
-    {% endif %}
-
-    <!-- ORTAK OKUNANLAR -->
-    {% if common_books %}
-        <h3 style="font-size: 30px; margin:20px 0; color:#aa9028;">📖 Ortak Okunanlar</h3>
+<!-- Tab içerikleri -->
+<div id="books" class="profile-tab-content active">
+    {% if books %}
         <div class="books-container">
-            {% for title, author in common_books %}
-                <div class="book-card">
-                    <h3>{{ title }}</h3>
-                    <p><strong>Yazar:</strong> {{ author }}</p>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    <!-- Kullanıcının kitapları -->
-    <h3 style="font-size: 30px; margin:30px 0; color:#aa9028;">📚 {{ user.username }}'ın Kitapları</h3>
-    <div class="books-container">
-        {% if books %}
             {% for book in books %}
                 <div class="book-card">
                     <h3>{{ book.title }}</h3>
                     <p><strong>Yazar:</strong> {{ book.author }}</p>
-                    {% if book.read_date %}
-                        <p><strong>Okuma Tarihi:</strong> {{ book.read_date }}</p>
-                    {% endif %}
-                    {% if book.page %}
-                        <p><strong>Sayfa Sayısı:</strong> {{ book.page }}</p>
-                    {% endif %}
-                    {% if book.notes %}
-                        <p><strong>Notlar:</strong> {{ book.notes }}</p>
-                    {% endif %}
+                    {% if book.read_date %}<p><strong>Okuma Tarihi:</strong> {{ book.read_date }}</p>{% endif %}
+                    {% if book.page %}<p><strong>Sayfa Sayısı:</strong> {{ book.page }}</p>{% endif %}
+                    {% if book.notes %}<p><strong>Notlar:</strong> {{ book.notes }}</p>{% endif %}
                 </div>
             {% endfor %}
-        {% else %}
-            <p>Henüz kitap eklenmemiş.</p>
-        {% endif %}
+        </div>
+    {% else %}<p style="color: #c2ad3c; text-align: center;">Henüz kitap eklenmemiş.</p>{% endif %}
+</div>
+
+<div id="common" class="profile-tab-content">
+    {% if common_books %}
+        <div class="books-container">
+            {% for book in common_books %}
+                <div class="book-card">
+                    <h3>{{ book.title }}</h3>
+                    <p><strong>Yazar:</strong> {{ book.author }}</p>
+                    {% if book.read_date %}<p><strong>Okuma Tarihi:</strong> {{ book.read_date }}</p>{% endif %}
+                    {% if book.page %}<p><strong>Sayfa Sayısı:</strong> {{ book.page }}</p>{% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}<p style="color: #c2ad3c; text-align: center;">Ortak kitap yok.</p>{% endif %}
+</div>
+
+<div id="achievements" class="profile-tab-content">
+    {% if user_achievements %}
+        <div class="books-container">
+            {% for ach in user_achievements %}
+                <div class="book-card">
+                    <img src="{{ url_for('static', filename='achievements/' ~ ach[2]) }}" alt="{{ ach[0] }}">
+                    <h4>{{ ach[0] }}</h4>
+                    <p>{{ ach[1] }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}<p style="color: #c2ad3c; text-align: center;">Henüz başarımları yok.</p>{% endif %}
+</div>
+
+<!-- Profil mesajlaşma tabı -->
+<div id="chat" class="profile-tab-content">
+    <div class="social-wrapper">
+        <h2><span>{{ user.username }}</span> ile Sohbet Et</h2>
+        <div class="chat-wrapper">
+            <div class="chat-box" id="private-chat-box">
+                {% for msg, username, created_at, sender_id, receiver_id in private_messages %}
+                    <div class="message-bubble {% if sender_id == current_user_id %}sent{% else %}received{% endif %}">
+                        {% if sender_id != current_user_id %}<div class="sender">{{ username }}</div>{% endif %}
+                        <div class="content">{{ msg }}</div>
+                        <div class="time">{{ created_at.split(' ')[1] }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+            <form id="private-chat-form" method="POST" action="{{ url_for('send_private_message') }}">
+                <input type="hidden" id="receiverSelect" name="receiver_id" value="{{ chat_with_id }}">
+                <input type="text" name="message" placeholder="Mesaj yaz..." required style="width:70%; max-width:350px; padding:8px; box-sizing:border-box;">
+                <button type="submit">Gönder</button>
+            </form>
+        </div>
     </div>
 </div>
+
+<!-- Yorumlar tabı -->
+<div id="comments" class="profile-tab-content">
+    <div class="social-wrapper">
+        <h2><span>{{ user.username }}</span> Hakkında Yorumlar</h2>
+        <div class="chat-wrapper">
+            <div class="chat-box" id="comments-box">
+                {% for comment, username, created_at in comments %}
+                    <div class="comment-card">
+                        <div class="comment-header"><span>{{ username }}</span><span>{{ created_at.split(' ')[0] }}</span></div>
+                        <div class="comment-content">{{ comment }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+            <form id="comment-form" method="POST">
+                <input type="text" name="comment" placeholder="Yorum yaz..." required>
+                <button type="submit">Gönder</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const CURRENT_USER_ID = {{ current_user_id }};
+
+// Profil tabları
+function openProfileTab(tabId) {
+    const tabs = document.querySelectorAll('.profile-tab-link');
+    const contents = document.querySelectorAll('.profile-tab-content');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    contents.forEach(content => content.classList.remove('active'));
+    document.querySelector(`.profile-tab-link[onclick="openProfileTab('${tabId}')"]`).classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+
+    if(tabId === 'chat') document.getElementById('private-chat-box').scrollTop = document.getElementById('private-chat-box').scrollHeight;
+    if(tabId === 'comments') document.getElementById('comments-box').scrollTop = document.getElementById('comments-box').scrollHeight;
+}
+
+// Private chat AJAX
+const privateForm = document.getElementById('private-chat-form');
+const privateChatBox = document.getElementById('private-chat-box');
+
+privateForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(privateForm);
+    const response = await fetch(privateForm.action, { method:'POST', body: formData });
+    if(response.ok){
+        const data = await response.json();
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message-bubble sent';
+        msgDiv.innerHTML = `<div class="content">${formData.get('message')}</div><div class="time">${data.time}</div>`;
+        privateChatBox.appendChild(msgDiv);
+        privateChatBox.scrollTop = privateChatBox.scrollHeight;
+        privateForm.reset();
+    }
+});
+
+// Yorumlar AJAX
+const commentForm = document.getElementById('comment-form');
+const commentsBox = document.getElementById('comments-box');
+
+commentForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(commentForm);
+    const res = await fetch(window.location.href, { method:'POST', body: formData });
+    if(res.ok){
+        const data = await res.json();
+        const div = document.createElement('div');
+        div.className = 'comment-card';
+        div.innerHTML = `<div class="comment-header"><span>{{ user_box.username }}</span><span>${data.time}</span></div><div class="comment-content">${formData.get('comment')}</div>`;
+        commentsBox.appendChild(div);
+        commentsBox.scrollTop = commentsBox.scrollHeight;
+        commentForm.reset();
+    }
+});
+
+// Private chat otomatik yenileme
+async function fetchNewMessages() {
+    const res = await fetch(`/get_private_messages/{{ chat_with_id }}`);
+    const messages = await res.json();
+    if(privateChatBox.children.length !== messages.length){
+        privateChatBox.innerHTML = '';
+        messages.forEach(msg => {
+            const div = document.createElement('div');
+            div.className = 'message-bubble ' + (msg.sender_id === CURRENT_USER_ID ? 'sent' : 'received');
+            div.innerHTML = (msg.sender_id !== CURRENT_USER_ID ? `<div class="sender">${msg.username}</div>` : '') +
+                            `<div class="content">${msg.msg}</div><div class="time">${msg.time}</div>`;
+            privateChatBox.appendChild(div);
+        });
+        privateChatBox.scrollTop = privateChatBox.scrollHeight;
+    }
+}
+
+setInterval(fetchNewMessages, 2000);
+
+// Yorumlar scroll en alta
+window.addEventListener('load', () => {
+    if(document.getElementById('comments').classList.contains('active')){
+        commentsBox.scrollTop = commentsBox.scrollHeight;
+    }
+    if(document.getElementById('chat').classList.contains('active')){
+        privateChatBox.scrollTop = privateChatBox.scrollHeight;
+    }
+});
+</script>
+<br><br><br>
 </body>
 </html>

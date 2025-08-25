@@ -52,6 +52,7 @@ body {
 </style>
 </head>
 <body>
+
     <div class="user-box">
     <div class="level-box">
         <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
@@ -80,8 +81,19 @@ body {
     <a href="/social" class="tab-link">👥 Sosyal</a>
     <a href="/leaderboard" class="tab-link active">🏆 Liderlik Tablosu</a>
     <a href="/feed" class="tab-link">📰 Akış</a>
+    <a href="/achievements" class="tab-link">🎖️ Başarımlar</a>
 </div>
-
+            {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 <div class="leaderboard-wrapper">
 
     <h2 style="color: #a1861b; text-align: center; font-size: 35px; margin-bottom: 20px; margin-top: 20px;">En Çok Kitap Okuyanlar</h2>

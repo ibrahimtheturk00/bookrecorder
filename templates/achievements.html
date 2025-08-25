@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Başarımlar - Kitap Kayıt Sistemi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* ---------------- LOGOUT ---------------- */
+        .achievement-logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #232323;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .achievement-logout-btn:hover {
+            background: #434343;
+        }
+
+        /* ---------------- BAŞARIM KARTLARI ---------------- */
+        .achievement-wrapper {
+            max-width: 1400px;
+            margin: 20px auto 50px auto;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .achievement-wrapper h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        .achievement-cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .achievement-card {
+            background: rgba(0,0,0,0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px;
+            width: 220px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+        }
+
+        .achievement-card img {
+            width: 128px;
+            height: 128px;
+            margin-bottom: 12px;
+        }
+
+        .achievement-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #ffd700;
+        }
+
+        .achievement-card p {
+            font-size: 14px;
+            margin: 0px 0;
+            min-height: 40px;
+        }
+
+        .achievement-card .unlocked {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .achievement-card .locked {
+            color: #f87171;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- USER BOX -->
+    <div class="user-box">
+        <div class="level-box">
+            <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+                <script>
+                    document.getElementById('progressBar').style.width = "{{ user_box.progress }}%";
+                </script>
+            </div>
+            <small>{{ user_box.xp % 100 }}/100 XP</small>
+
+            <!-- Unvan -->
+            {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+            {% set title_index = ((user_box.level - 1) // 5) %} 
+            <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+        </div>
+    </div>
+    <h1 class="page-title">Kitap Kayıt Sistemi</h1>
+    <!-- LOGOUT -->
+    <a href="/logout" class="achievement-logout-btn">Çıkış Yap</a>
+
+    <!-- TAB MENÜ -->
+    <div class="tabs">
+        <a href="/dashboard" class="tab-link">📊 Dashboard</a>
+        <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
+        <a href="/my_books" class="tab-link">📚 Kitaplarım</a>
+        <a href="/library" class="tab-link">🌐 Kütüphane</a>
+        <a href="/social" class="tab-link">👥 Sosyal</a>
+        <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
+        <a href="/feed" class="tab-link">📰 Akış</a>
+        <a href="/achievements" class="tab-link active">🎖️ Başarımlar</a>
+    </div>
+
+    <!-- BAŞARIM KARTLARI -->
+    <div class="achievement-wrapper">
+        <h2>Başarımlar</h2>
+        <div class="achievement-cards-container">
+            {% if achievements %}
+                {% for ach in achievements %}
+    <div class="achievement-card">
+        <img src="{{ url_for('static', filename='achievements/' ~ ach.image) }}" 
+     alt="{{ ach.name }}" 
+     width="200">
+        <h3>{{ ach.name }}</h3>
+        <p>{{ ach.description }}</p>
+        {% if ach.unlocked %}
+            <p class="unlocked">✅ Kilit Açıldı</p>
+        {% else %}
+            <p class="locked">🔒 Kilitli</p>
+        {% endif %}
+    </div>
+{% endfor %}
+            {% else %}
+                <p style="text-align:center;">Henüz bir başarım yok.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // progress bar
+        document.getElementById('progressBar').style.width = "{{ user_box.progress }}%";
+    </script>
+</body>
+</html>

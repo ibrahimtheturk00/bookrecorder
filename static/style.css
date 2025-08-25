@@ -85,9 +85,10 @@ body {
     transition: background 0.3s;
 }
 .tab-link.active, .tab-link:hover {
-    background-color: #aa9028;
+    background-color: #765f05;
     color: #2B2A2A;
 }
+
 
 /* Dashboard Wrapper */
 .dashboard-wrapper {
@@ -302,14 +303,15 @@ body {
 }
 
 .progress-bar {
-    background: #444;
-    border-radius: 8px;
-    overflow: hidden;
-    height: 10px;
-    margin: 5px 0;
+    width: 100%;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    margin: 10px 0;
+    height: 20px;
 }
 
 .progress {
-    background: linear-gradient(90deg, #4caf50, #8bc34a);
-    height: 10px;
+    height: 100%;
+    background: #aa9028;
+    border-radius: 10px;
 }

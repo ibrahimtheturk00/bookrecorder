@@ -67,6 +67,54 @@ body {
     background-color: #fff;
     color: #aa9028;
 }
+.flash-messages {
+    margin: 15px auto;
+    max-width: 700px;
+    padding: 0 10px;
+}
+
+/* Her bir mesaj kutusu */
+.alert {
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    animation: fadeIn 0.4s ease;
+}
+
+/* Mesaj tiplerine göre renkler */
+.alert-success {
+    background: #383939;
+    border-left: 6px solid #686a6a;
+    color: #b3b3b3;
+}
+
+.alert-error {
+    background: #fdd8d8;
+    border-left: 6px solid #dc3545;
+    color: #721c24;
+}
+
+.alert-warning {
+    background: #fff3cd;
+    border-left: 6px solid #ffc107;
+    color: #856404;
+}
+
+.alert-info {
+    background: #d1ecf1;
+    border-left: 6px solid #17a2b8;
+    color: #0c5460;
+}
+
+/* Animasyon */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 </style>
 </head>
 <body>
@@ -103,8 +151,19 @@ body {
     <a href="/social" class="tab-link">👥 Sosyal</a>
     <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
     <a href="/feed" class="tab-link active">📰 Akış</a>
+    <a href="/achievements" class="tab-link">🎖️ Başarımlar</a>
 </div>
-
+            {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 <div class="feed-wrapper">
     {% for item in feed_data %}
     <div class="feed-item">

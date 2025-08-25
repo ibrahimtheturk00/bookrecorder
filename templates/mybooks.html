@@ -9,14 +9,14 @@
         /* MyBooks sayfasına özel stil */
         .mybooks-wrapper {
             max-width: 1200px;
-            margin: 20px auto 20px auto;
+            margin: 20px auto;
             padding: 30px;
             color: #fff;
         }
 
         .mybooks-wrapper h2 {
             text-align: center;
-            font-size: 28px;
+            font-size: 50px;
             margin-bottom: 30px;
         }
 
@@ -53,6 +53,42 @@
             font-size: 14px;
             margin: 5px 0;
         }
+
+        .book-actions {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .btn-edit {
+            background:#aa9028;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #725f10;
+        }
+
+        .btn-delete {
+            background: #921f1b;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            background: #4f0906;
+        }
+
         .logout-btn {
             position: absolute;
             top: 20px;
@@ -107,26 +143,78 @@
             font-size: 16px;
             margin: 8px 0;
         }
-    </style>
+    /* Flash mesajların genel alanı */
+.flash-messages {
+    font-size: 30px;
+    margin: 15px auto;
+    max-width: 700px;
+    padding: 0 10px;
+}
+
+/* Her bir mesaj kutusu */
+.alert {
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    animation: fadeIn 0.4s ease;
+}
+
+/* Mesaj tiplerine göre renkler */
+.alert-success {
+    background: #383939;
+    border-left: 6px solid #686a6a;
+    color: #b3b3b3;
+}
+
+.alert-error {
+    background: #fdd8d8;
+    border-left: 6px solid #dc3545;
+    color: #721c24;
+}
+
+.alert-warning {
+    background: #fff3cd;
+    border-left: 6px solid #ffc107;
+    color: #856404;
+}
+
+.alert-info {
+    background: #d1ecf1;
+    border-left: 6px solid #17a2b8;
+    color: #0c5460;
+}
+
+/* Animasyon */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+</style>
 </head>
 <body>
     <div class="user-box">
-    <div class="level-box">
-        <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
-        <div class="progress-bar">
-            <div class="progress" id="progressBar"></div>
-            <script>
-                document.getElementById('progressBar').style.width = "{{ user_box.progress }}%";
-            </script>
-        </div>
-        <small>{{ user_box.xp % 100 }}/100 XP</small>
+        <div class="level-box">
+            <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+                <script>
+                    document.getElementById('progressBar').style.width = "{{ user_box.progress }}%";
+                </script>
+            </div>
+            <small>{{ user_box.xp % 100 }}/100 XP</small>
 
-        <!-- Unvan -->
-        {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
-        {% set title_index = ((user_box.level - 1) // 5) %}
-        <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+            <!-- Unvan -->
+            {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+            {% set title_index = ((user_box.level - 1) // 5) %} 
+            <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+        </div>
     </div>
-</div>
+
     <a href="/logout" class="logout-btn">Çıkış Yap</a>
 
     <!-- Sayfa Başlığı -->
@@ -141,10 +229,21 @@
         <a href="/social" class="tab-link">👥 Sosyal</a>
         <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
         <a href="/feed" class="tab-link">📰 Akış</a>
+        <a href="/achievements" class="tab-link">🏅 Başarımlar</a>
     </div>
-
+            {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
     <!-- ===== İstatistik Kartları ===== -->
-     <br><br><br><br>
+    <br><br><br><br>
     <div class="stats-card-wrapper">
         <div class="stats-card">
             <h3>Toplam Sayfa</h3>
@@ -162,23 +261,30 @@
 
     <!-- Kitaplar -->
     <div class="mybooks-wrapper">
-        <h2 style="font-size: 50px;">Kitaplarım</h2>
+        <h2>Kitaplarım</h2>
         <div class="books-container">
             {% if books %}
                 {% for book in books %}
                     <div class="book-card">
                         <h3>{{ book.title }}</h3>
                         <p><strong>Yazar:</strong> {{ book.author }}</p>
-                        {% if book.read_date %}<p><strong>Okuma Tarihi:</strong> {{ book.read_date }}</p>{% endif %}
-                        {% if book.page %}<p><strong>Sayfa Sayısı:</strong> {{ book.page }}</p>{% endif %}
+                        {% if book.read_date %}
+                            <p><strong>Okuma Tarihi:</strong> {{ book.read_date }}</p>
+                        {% endif %}
+                        {% if book.page %}
+                            <p><strong>Sayfa Sayısı:</strong> {{ book.page }}</p>
+                        {% endif %}
                         {% if book.notes %}
-    <p><strong>Notlar:</strong></p>
-    <ul>
-        {% if book.notes %}
-    <p><strong>Notlar:</strong> {{ book.notes }}</p>
-{% endif %}
-    </ul>
-{% endif %}
+                            <p><strong>Notlar:</strong> {{ book.notes }}</p>
+                        {% endif %}
+
+                        <!-- Düzenle / Sil Butonları -->
+                        <div class="book-actions">
+                            <a href="{{ url_for('edit_book', id=book.id) }}" class="btn-edit">Düzenle</a>
+                            <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn-delete">✖ Sil</button>
+                            </form>
+                        </div>
                     </div>
                 {% endfor %}
             {% else %}

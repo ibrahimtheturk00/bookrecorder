@@ -89,6 +89,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="user-box">
     <div class="level-box">
@@ -121,8 +122,19 @@
         <a href="/social" class="tab-link">👥 Sosyal</a>
         <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
         <a href="/feed" class="tab-link">📰 Akış</a>
+        <a href="/achievements" class="tab-link">🎖️ Başarımlar</a>
     </div>
-
+            {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
     <!-- Tüm Kitaplar -->
     <div class="library-wrapper">
         <h2>Tüm Kullanıcıların Ekledikleri Kitaplar</h2>

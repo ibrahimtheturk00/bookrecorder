@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kitap Düzenle</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+
+        header h1 {
+            margin: 0;
+            color: #aa9028;
+            font-size: 28px;
+        }
+        .form-wrapper {
+            color:#aa9028;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px 50px;
+            width: 400px;
+            margin: 50px auto 0; /* ← üstten boşluk eklendi */
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            margin-bottom: 100px;
+        }
+
+        .form-wrapper h2 {
+            margin-bottom: 25px;
+            font-size: 22px;
+            color: #aa9028;
+        }
+
+        .form-wrapper label {
+            display: block;
+            margin: 12px 0 6px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-wrapper input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            margin-bottom: 12px;
+            font-size: 15px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            transition: 0.3s;
+        }
+
+        .form-wrapper input:focus {
+            background: rgba(255,255,255,0.25);
+            box-shadow: 0 0 10px rgba(170, 144, 40, 0.6);
+        }
+
+        .form-wrapper button {
+            background:#aa9028;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 10px;
+            width: 100%;
+            transition: 0.3s;
+        }
+        .form-wrapper textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    margin-bottom: 12px;
+    font-size: 15px;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    transition: 0.3s;
+    resize: vertical;
+}
+
+.form-wrapper textarea:focus {
+    background: rgba(255,255,255,0.25);
+    box-shadow: 0 0 10px rgba(170, 144, 40, 0.6);
+}
+
+        .form-wrapper button:hover {
+            background:#67550f;
+            transform: translateY(-2px);
+        }
+
+        .form-wrapper .back-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: #d9534f;
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .form-wrapper .back-btn:hover {
+            background: #b52b27;
+        }
+    </style>
+</head>
+<body>
+    <header>
+            <h1 class="page-title">Kitap Kayıt Sistemi</h1>
+    </header>
+    <div class="user-box">
+        <div class="level-box">
+            <p><strong>{{ user_box.username }} - Seviye {{ user_box.level }}</strong></p>
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+                <script>
+                    document.getElementById('progressBar').style.width = "{{ user_box.progress }}%";
+                </script>
+            </div>
+            <small>{{ user_box.xp % 100 }}/100 XP</small>
+
+            <!-- Unvan -->
+            {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
+            {% set title_index = ((user_box.level - 1) // 5) %} 
+            <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <a href="/dashboard" class="tab-link">📊 Dashboard</a>
+        <a href="/add_book" class="tab-link">➕ Kitap Ekle</a>
+        <a href="/my_books" class="tab-link active">📚 Kitaplarım</a>
+        <a href="/library" class="tab-link">🌐 Kütüphane</a>
+        <a href="/social" class="tab-link">👥 Sosyal</a>
+        <a href="/leaderboard" class="tab-link">🏆 Liderlik Tablosu</a>
+        <a href="/feed" class="tab-link">📰 Akış</a>
+        <a href="/achievements" class="tab-link">🎖️ Başarımlar</a>
+    </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+    <div class="form-wrapper">
+        <h2>Kitap Düzenle</h2>
+        <form method="POST">
+    <label>Başlık:</label>
+    <input type="text" name="title" value="{{ book[1] }}" required>
+
+    <label>Yazar:</label>
+    <input type="text" name="author" value="{{ book[2] }}" required>
+
+    <label>Okuma Tarihi:</label>
+    <input type="date" name="read_date" value="{{ book[3] }}">
+
+    <label>Sayfa:</label>
+    <input type="number" name="page" value="{{ book[4] }}">
+
+    <label>Not:</label>
+    <textarea name="note" rows="4">{{ book[5] if book|length > 5 else '' }}</textarea>
+
+    <button type="submit">Kaydet</button>
+</form>
+        <a href="{{ url_for('my_books') }}" class="back-btn">⬅ Geri Dön</a>
+    </div>
+</body>
+</html>
