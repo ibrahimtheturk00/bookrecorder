@@ -462,7 +462,7 @@ def user_profile(user_id):
         if comment_text:
             cursor.execute(
                 "INSERT INTO comments (book_id, user_id, comment) VALUES (?, ?, ?)",
-                (0, current_user_id, comment_text)  # book_id=0 profil yorumları için
+                (0, current_user_id, comment_text)
             )
             conn.commit()
             conn.close()
@@ -470,7 +470,7 @@ def user_profile(user_id):
         conn.close()
         return jsonify({"success": False}), 400
 
-    # GET: Profil bilgilerini çek
+    # Profil bilgisi
     cursor.execute("SELECT id, username FROM users WHERE id=?", (user_id,))
     user_row = cursor.fetchone()
     if not user_row:
@@ -478,6 +478,16 @@ def user_profile(user_id):
         conn.close()
         return redirect(url_for("social"))
     user = {"id": user_row[0], "username": user_row[1]}
+
+    # Takip durumu
+    cursor.execute("SELECT 1 FROM follows WHERE follower_id=? AND following_id=?", (current_user_id, user_id))
+    is_following = bool(cursor.fetchone())
+
+    # Takipçi ve takip edilen sayısı
+    cursor.execute("SELECT COUNT(*) FROM follows WHERE following_id=?", (user_id,))
+    followers_count = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM follows WHERE follower_id=?", (user_id,))
+    following_count = cursor.fetchone()[0]
 
     # Kullanıcının kitapları
     cursor.execute("""
@@ -562,7 +572,10 @@ def user_profile(user_id):
         private_messages=private_messages,
         comments=comments,
         current_user_id=current_user_id,
-        chat_with_id=user_id
+        chat_with_id=user_id,
+        is_following=is_following,
+        followers_count=followers_count,
+        following_count=following_count
     )
 
 
@@ -572,7 +585,7 @@ def toggle_follow(user_id):
     current_user_id = session["user_id"]
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT 1 FROM follows WHERE follower_id=? AND following_id=?", (current_user_id, user_id))
+    cursor.execute("SELECT user_id FROM follows WHERE follower_id=? AND following_id=?", (current_user_id, user_id))
     is_following = cursor.fetchone() is not None
 
     if is_following:
@@ -591,6 +604,30 @@ def toggle_follow(user_id):
     conn.close()
     return redirect(url_for("user_profile", user_id=user_id))
 
+@app.route("/follow/<int:user_id>", methods=["POST"])
+def follow_user(user_id):
+    if "user_id" not in session:
+        return jsonify({"success": False, "message": "Giriş yapmalısınız."}), 403
+
+    current_user_id = session["user_id"]
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    # Takip/Unfollow kontrolü
+    cursor.execute("SELECT 1 FROM follows WHERE follower_id=? AND following_id=?", (current_user_id, user_id))
+    exists = cursor.fetchone()
+    if exists:
+        cursor.execute("DELETE FROM follows WHERE follower_id=? AND following_id=?", (current_user_id, user_id))
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True, "following": False})
+    else:
+        cursor.execute("INSERT INTO follows (follower_id, following_id) VALUES (?, ?)", (current_user_id, user_id))
+        conn.commit()
+        conn.close()
+        # Achievements kontrolü
+        check_achievements(current_user_id)
+        return jsonify({"success": True, "following": True})
 
 @app.route("/followers/<string:type>")
 def followers_list(type):

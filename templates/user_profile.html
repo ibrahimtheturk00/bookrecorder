@@ -109,8 +109,13 @@ form { text-align: center; }
     {% set titles = ['Acemi Okur', 'Kitap Kurdu', 'Usta Okur', 'Bilge Okur', 'Efsane Okur'] %}
     {% set title_index = ((user_box.level - 1) // 5) %}
     <p>Unvan: {{ titles[title_index if title_index < titles|length else -1] }}</p>
+    <p style="margin-top:5px; font-size:14px; color:#aa9028;">
+        Takipçi: {{ followers_count }} | Takip Edilen: {{ following_count }}
+    </p>
+    <button id="follow-btn" style="margin:10px auto; display:block; padding:10px 20px; border-radius:12px; border:none; background:#aa9028; color:#fff; font-weight:bold; cursor:pointer;">
+    {{ "Takipten Çık" if is_following else "Takip Et" }}
+</button>
 </div>
-
 <!-- Profil içi tablar -->
 <div class="profile-tabs">
     <a class="profile-tab-link active" onclick="openProfileTab('books')">📚 Eklediği Kitaplar</a>
@@ -119,7 +124,17 @@ form { text-align: center; }
     <a class="profile-tab-link" onclick="openProfileTab('chat')">💬 Mesajlaşma</a>
     <a class="profile-tab-link" onclick="openProfileTab('comments')">📝 Yorumlar</a>
 </div>
-
+<script>
+// Follow/Unfollow
+const followBtn = document.getElementById("follow-btn");
+followBtn.addEventListener("click", async () => {
+    const res = await fetch("/follow/{{ user.id }}", {method:"POST"});
+    const data = await res.json();
+    if(data.success){
+        followBtn.textContent = data.following ? "Takipten Çık" : "Takip Et";
+    }
+});
+</script>
 <!-- Tab içerikleri -->
 <div id="books" class="profile-tab-content active">
     {% if books %}
